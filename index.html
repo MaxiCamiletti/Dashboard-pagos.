@@ -2,86 +2,129 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard Medios de Pago</title>
+<title>Dashboard Financiero</title>
 
 <style>
+
+/* ===== BASE ===== */
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
 }
 
+/* ===== LAYOUT ===== */
 .container {
-  padding: 25px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
 }
 
-h1 {
-  text-align: center;
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
 }
 
-/* KPIs */
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.search {
+  padding: 10px;
+  border: 1px solid #cbd5f5;
+  border-radius: 6px;
+  width: 250px;
+}
+
+/* ===== KPIs ===== */
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
-  margin: 20px 0;
+  margin-bottom: 25px;
 }
 
 .card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 15px;
+  border-radius: 8px;
 }
 
 .card h2 {
   margin: 0;
+  font-size: 16px;
+  color: #065f46;
 }
 
-/* CONTROLES */
-.controls {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+.card p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #64748b;
 }
 
-input, select {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-}
-
-/* TABLA */
+/* ===== TABLA ===== */
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #1e293b;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th, td {
   padding: 12px;
-  text-align: center;
+  text-align: left;
 }
 
 th {
-  background: #334155;
+  background: #f1f5f9;
+  font-size: 13px;
+  color: #475569;
+}
+
+tr {
+  border-top: 1px solid #e2e8f0;
 }
 
 tr:hover {
-  background: #475569;
+  background: #f8fafc;
 }
 
-/* BADGES */
+/* ===== BADGES ===== */
 .badge {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-.bajo { background: #22c55e; color: black; }
-.medio { background: #facc15; color: black; }
-.alto { background: #ef4444; color: white; }
+.bajo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.medio {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.alto {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ===== DETALLE MARCA (NARANJA SUTIL) ===== */
+.accent {
+  color: #f97316;
+}
 
 </style>
 </head>
@@ -90,30 +133,23 @@ tr:hover {
 
 <div class="container">
 
-<h1>💳 Dashboard Financiero</h1>
-
-<div class="kpis">
-  <div class="card"><h2 id="barato"></h2><p>Más barato</p></div>
-  <div class="card"><h2 id="rapido"></h2><p>Más rápido</p></div>
-  <div class="card"><h2 id="seguro"></h2><p>Más seguro</p></div>
-  <div class="card"><h2 id="promedio"></h2><p>Comisión promedio</p></div>
+<div class="header">
+  <h1>Medios de Pago <span class="accent">| Dashboard</span></h1>
+  <input class="search" id="search" placeholder="Buscar método...">
 </div>
 
-<div class="controls">
-  <input type="text" id="search" placeholder="Buscar método...">
-  <select id="filtro">
-    <option value="">Todos</option>
-    <option value="Bajo">Bajo</option>
-    <option value="Medio">Medio</option>
-    <option value="Alto">Alto</option>
-  </select>
+<div class="kpis">
+  <div class="card"><h2 id="barato"></h2><p>Método más económico</p></div>
+  <div class="card"><h2 id="rapido"></h2><p>Acreditación más rápida</p></div>
+  <div class="card"><h2 id="seguro"></h2><p>Menor riesgo</p></div>
+  <div class="card"><h2 id="promedio"></h2><p>Comisión promedio</p></div>
 </div>
 
 <table>
 <thead>
 <tr>
 <th>Método</th>
-<th>Comisión %</th>
+<th>Comisión</th>
 <th>Tiempo</th>
 <th>Riesgo</th>
 <th>Monto mínimo</th>
@@ -127,6 +163,7 @@ tr:hover {
 
 <script>
 
+/* DATA */
 const data = [
 {m:"Mercado Pago",c:6,t:2,r:"Medio",min:"$1000"},
 {m:"Transferencia bancaria argentina",c:0,t:0,r:"Bajo",min:"$1000"},
@@ -157,6 +194,7 @@ const data = [
 {m:"Pago Movil interbancario",c:0.5,t:0,r:"Bajo",min:"$20"}
 ];
 
+/* RENDER */
 const tabla = document.getElementById("tabla");
 
 function render(datos){
@@ -173,6 +211,7 @@ function render(datos){
   });
 }
 
+/* KPIs */
 function calcularKPIs(){
   let barato = data.reduce((a,b)=> a.c<b.c?a:b);
   let rapido = data.reduce((a,b)=> a.t<b.t?a:b);
@@ -185,21 +224,13 @@ function calcularKPIs(){
   document.getElementById("promedio").innerText = promedio.toFixed(2)+"%";
 }
 
-function filtrar(){
-  const texto = document.getElementById("search").value.toLowerCase();
-  const riesgo = document.getElementById("filtro").value;
+/* BUSCADOR */
+document.getElementById("search").addEventListener("keyup", e=>{
+  const texto = e.target.value.toLowerCase();
+  render(data.filter(d=>d.m.toLowerCase().includes(texto)));
+});
 
-  const filtrado = data.filter(d=>{
-    return d.m.toLowerCase().includes(texto) &&
-           (riesgo==="" || d.r===riesgo);
-  });
-
-  render(filtrado);
-}
-
-document.getElementById("search").addEventListener("keyup", filtrar);
-document.getElementById("filtro").addEventListener("change", filtrar);
-
+/* INIT */
 render(data);
 calcularKPIs();
 
