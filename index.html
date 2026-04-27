@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Medios de Pago</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.container {
+  padding: 25px;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* KPIs */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.card h2 {
+  margin: 0;
+}
+
+/* CONTROLES */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+/* TABLA */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1e293b;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+}
+
+th {
+  background: #334155;
+}
+
+tr:hover {
+  background: #475569;
+}
+
+/* BADGES */
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.bajo { background: #22c55e; color: black; }
+.medio { background: #facc15; color: black; }
+.alto { background: #ef4444; color: white; }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>💳 Dashboard Financiero</h1>
+
+<div class="kpis">
+  <div class="card"><h2 id="barato"></h2><p>Más barato</p></div>
+  <div class="card"><h2 id="rapido"></h2><p>Más rápido</p></div>
+  <div class="card"><h2 id="seguro"></h2><p>Más seguro</p></div>
+  <div class="card"><h2 id="promedio"></h2><p>Comisión promedio</p></div>
+</div>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar método...">
+  <select id="filtro">
+    <option value="">Todos</option>
+    <option value="Bajo">Bajo</option>
+    <option value="Medio">Medio</option>
+    <option value="Alto">Alto</option>
+  </select>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Comisión %</th>
+<th>Tiempo</th>
+<th>Riesgo</th>
+<th>Monto mínimo</th>
+</tr>
+</thead>
+
+<tbody id="tabla"></tbody>
+</table>
+
+</div>
+
+<script>
+
+const data = [
+{m:"Mercado Pago",c:6,t:2,r:"Medio",min:"$1000"},
+{m:"Transferencia bancaria argentina",c:0,t:0,r:"Bajo",min:"$1000"},
+{m:"Mercado Pago Crédito",c:10,t:10,r:"Alto",min:"$1000"},
+{m:"Ualá",c:5,t:2,r:"Medio",min:"$1000"},
+{m:"Transferencia pesos Bol",c:1,t:1,r:"Medio",min:"$50"},
+{m:"Pix",c:0.8,t:0,r:"Bajo",min:"$50"},
+{m:"Transferencia pesos Chi",c:1,t:1,r:"Medio",min:"$50"},
+{m:"Transferencia pesos Col",c:1.2,t:1,r:"Medio",min:"$50"},
+{m:"Nequi",c:1,t:1,r:"Medio",min:"$50"},
+{m:"BTC",c:0.5,t:1,r:"Bajo",min:"$20"},
+{m:"DAI",c:0.3,t:1,r:"Bajo",min:"$20"},
+{m:"USDT",c:0.5,t:1,r:"Bajo",min:"$20"},
+{m:"USDC",c:0.4,t:1,r:"Bajo",min:"$20"},
+{m:"Transferencia en Euros",c:0.5,t:2,r:"Bajo",min:"€50"},
+{m:"Wise EUR",c:0.6,t:1,r:"Bajo",min:"€50"},
+{m:"Wise USD",c:0.6,t:1,r:"Bajo",min:"$50"},
+{m:"Transferencia Pesos Mex",c:1.2,t:1,r:"Medio",min:"$100"},
+{m:"Transferencia argentina USD",c:0.5,t:1,r:"Bajo",min:"$50"},
+{m:"Neteller",c:3,t:2,r:"Alto",min:"$50"},
+{m:"Paypal",c:5.4,t:2,r:"Alto",min:"$50"},
+{m:"Payoneer",c:3,t:2,r:"Medio",min:"$50"},
+{m:"Skrill",c:3.5,t:2,r:"Alto",min:"$50"},
+{m:"Volet",c:2,t:1,r:"Medio",min:"$50"},
+{m:"Zelle",c:0,t:0,r:"Bajo",min:"$50"},
+{m:"Zinli",c:2,t:1,r:"Medio",min:"$50"},
+{m:"Transferencia en Bolivares",c:1.5,t:1,r:"Alto",min:"$50"},
+{m:"Pago Movil interbancario",c:0.5,t:0,r:"Bajo",min:"$20"}
+];
+
+const tabla = document.getElementById("tabla");
+
+function render(datos){
+  tabla.innerHTML="";
+  datos.forEach(d=>{
+    tabla.innerHTML += `
+    <tr>
+      <td>${d.m}</td>
+      <td>${d.c}%</td>
+      <td>${d.t} días</td>
+      <td><span class="badge ${d.r.toLowerCase()}">${d.r}</span></td>
+      <td>${d.min}</td>
+    </tr>`;
+  });
+}
+
+function calcularKPIs(){
+  let barato = data.reduce((a,b)=> a.c<b.c?a:b);
+  let rapido = data.reduce((a,b)=> a.t<b.t?a:b);
+  let seguro = data.find(d=>d.r==="Bajo");
+  let promedio = data.reduce((sum,d)=>sum+d.c,0)/data.length;
+
+  document.getElementById("barato").innerText = barato.m;
+  document.getElementById("rapido").innerText = rapido.m;
+  document.getElementById("seguro").innerText = seguro.m;
+  document.getElementById("promedio").innerText = promedio.toFixed(2)+"%";
+}
+
+function filtrar(){
+  const texto = document.getElementById("search").value.toLowerCase();
+  const riesgo = document.getElementById("filtro").value;
+
+  const filtrado = data.filter(d=>{
+    return d.m.toLowerCase().includes(texto) &&
+           (riesgo==="" || d.r===riesgo);
+  });
+
+  render(filtrado);
+}
+
+document.getElementById("search").addEventListener("keyup", filtrar);
+document.getElementById("filtro").addEventListener("change", filtrar);
+
+render(data);
+calcularKPIs();
+
+</script>
+
+</body>
+</html>
