@@ -1,240 +1,168 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard Financiero</title>
-
-<style>
-
-/* ===== BASE ===== */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f8fafc;
-  color: #1e293b;
-}
-
-/* ===== LAYOUT ===== */
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 30px;
-}
-
-/* ===== HEADER ===== */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.search {
-  padding: 10px;
-  border: 1px solid #cbd5f5;
-  border-radius: 6px;
-  width: 250px;
-}
-
-/* ===== KPIs ===== */
-.kpis {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-bottom: 25px;
-}
-
-.card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.card h2 {
-  margin: 0;
-  font-size: 16px;
-  color: #065f46;
-}
-
-.card p {
-  margin: 5px 0 0;
-  font-size: 13px;
-  color: #64748b;
-}
-
-/* ===== TABLA ===== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-th, td {
-  padding: 12px;
-  text-align: left;
-}
-
-th {
-  background: #f1f5f9;
-  font-size: 13px;
-  color: #475569;
-}
-
-tr {
-  border-top: 1px solid #e2e8f0;
-}
-
-tr:hover {
-  background: #f8fafc;
-}
-
-/* ===== BADGES ===== */
-.badge {
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.bajo {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.medio {
-  background: #fff7ed;
-  color: #9a3412;
-}
-
-.alto {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-/* ===== DETALLE MARCA (NARANJA SUTIL) ===== */
-.accent {
-  color: #f97316;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Medios de Pago</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+
+<div class="mesh-bg"></div>
 
 <div class="container">
 
-<div class="header">
-  <h1>Medios de Pago <span class="accent">| Dashboard</span></h1>
-  <input class="search" id="search" placeholder="Buscar método...">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-badge">
+        <span class="live-dot"></span>
+        Dashboard activo
+      </div>
+      <h1>Medios de <span class="gradient-text">Pago</span></h1>
+      <p>Costos, tiempos de acreditación y riesgo en tiempo real</p>
+    </div>
+    <div class="header-stats">
+      <div class="header-stat">
+        <span class="stat-value" id="total-metodos">0</span>
+        <span class="stat-label">Métodos</span>
+      </div>
+      <div class="header-stat">
+        <span class="stat-value" id="metodo-economico">—</span>
+        <span class="stat-label">Más económico</span>
+      </div>
+      <div class="header-stat">
+        <span class="stat-value" id="metodo-rapido">—</span>
+        <span class="stat-label">Más rápido</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- FILTROS -->
+  <div class="filters-bar">
+    <button class="filter-btn active" data-filter="todos">Todos</button>
+    <button class="filter-btn" data-filter="argentina">🇦🇷 Argentina</button>
+    <button class="filter-btn" data-filter="internacional">🌍 Internacional</button>
+    <button class="filter-btn" data-filter="cripto">₿ Cripto</button>
+    <button class="filter-btn" data-filter="tarjeta">💳 Tarjetas</button>
+    <div class="filter-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar método...">
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card" id="kpi-menor-comision">
+      <div class="kpi-icon kpi-green">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Menor comisión</span>
+        <span class="kpi-value" id="val-menor">—</span>
+        <span class="kpi-sub" id="sub-menor">—</span>
+      </div>
+    </div>
+    <div class="kpi-card" id="kpi-mas-rapido">
+      <div class="kpi-icon kpi-blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Acreditación más rápida</span>
+        <span class="kpi-value" id="val-rapido">—</span>
+        <span class="kpi-sub" id="sub-rapido">—</span>
+      </div>
+    </div>
+    <div class="kpi-card" id="kpi-menor-riesgo">
+      <div class="kpi-icon kpi-purple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Menor riesgo</span>
+        <span class="kpi-value" id="val-riesgo">—</span>
+        <span class="kpi-sub" id="sub-riesgo">—</span>
+      </div>
+    </div>
+    <div class="kpi-card" id="kpi-promedio">
+      <div class="kpi-icon kpi-orange">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <div class="kpi-body">
+        <span class="kpi-label">Comisión promedio</span>
+        <span class="kpi-value" id="val-promedio">—</span>
+        <span class="kpi-sub">del total de métodos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <section class="table-section">
+    <div class="section-header">
+      <h2>Comparativa completa</h2>
+      <span class="row-count" id="row-count">— métodos</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="metodo">Método <span class="sort-icon">↕</span></th>
+            <th>Categoría</th>
+            <th data-sort="fija">Com. Fija <span class="sort-icon">↕</span></th>
+            <th data-sort="variableNum">Com. Variable <span class="sort-icon">↕</span></th>
+            <th>Mínimo</th>
+            <th data-sort="demoraNum">Acreditación <span class="sort-icon">↕</span></th>
+            <th data-sort="riesgoNum">Riesgo <span class="sort-icon">↕</span></th>
+            <th>Moneda</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- GRÁFICOS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Comisión variable por método</h3>
+        <span class="chart-badge">%</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="grafico-barras"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Distribución por categoría</h3>
+        <span class="chart-badge">cant.</span>
+      </div>
+      <div class="chart-wrap chart-wrap-donut">
+        <canvas id="grafico-donut"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART COMISIÓN VS RIESGO -->
+  <div class="chart-card chart-full">
+    <div class="chart-header">
+      <h3>Comparativa: comisión vs tiempo de acreditación</h3>
+      <span class="chart-badge">análisis</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="grafico-comparativa"></canvas>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Los datos son referenciales y pueden variar según volumen, plan o negociación con cada plataforma.</p>
+  </footer>
+
 </div>
 
-<div class="kpis">
-  <div class="card"><h2 id="barato"></h2><p>Método más económico</p></div>
-  <div class="card"><h2 id="rapido"></h2><p>Acreditación más rápida</p></div>
-  <div class="card"><h2 id="seguro"></h2><p>Menor riesgo</p></div>
-  <div class="card"><h2 id="promedio"></h2><p>Comisión promedio</p></div>
-</div>
-
-<table>
-<thead>
-<tr>
-<th>Método</th>
-<th>Comisión</th>
-<th>Tiempo</th>
-<th>Riesgo</th>
-<th>Monto mínimo</th>
-</tr>
-</thead>
-
-<tbody id="tabla"></tbody>
-</table>
-
-</div>
-
-<script>
-
-/* DATA */
-const data = [
-{m:"Mercado Pago",c:6,t:2,r:"Medio",min:"$1000"},
-{m:"Transferencia bancaria argentina",c:0,t:0,r:"Bajo",min:"$1000"},
-{m:"Mercado Pago Crédito",c:10,t:10,r:"Alto",min:"$1000"},
-{m:"Ualá",c:5,t:2,r:"Medio",min:"$1000"},
-{m:"Transferencia pesos Bol",c:1,t:1,r:"Medio",min:"$50"},
-{m:"Pix",c:0.8,t:0,r:"Bajo",min:"$50"},
-{m:"Transferencia pesos Chi",c:1,t:1,r:"Medio",min:"$50"},
-{m:"Transferencia pesos Col",c:1.2,t:1,r:"Medio",min:"$50"},
-{m:"Nequi",c:1,t:1,r:"Medio",min:"$50"},
-{m:"BTC",c:0.5,t:1,r:"Bajo",min:"$20"},
-{m:"DAI",c:0.3,t:1,r:"Bajo",min:"$20"},
-{m:"USDT",c:0.5,t:1,r:"Bajo",min:"$20"},
-{m:"USDC",c:0.4,t:1,r:"Bajo",min:"$20"},
-{m:"Transferencia en Euros",c:0.5,t:2,r:"Bajo",min:"€50"},
-{m:"Wise EUR",c:0.6,t:1,r:"Bajo",min:"€50"},
-{m:"Wise USD",c:0.6,t:1,r:"Bajo",min:"$50"},
-{m:"Transferencia Pesos Mex",c:1.2,t:1,r:"Medio",min:"$100"},
-{m:"Transferencia argentina USD",c:0.5,t:1,r:"Bajo",min:"$50"},
-{m:"Neteller",c:3,t:2,r:"Alto",min:"$50"},
-{m:"Paypal",c:5.4,t:2,r:"Alto",min:"$50"},
-{m:"Payoneer",c:3,t:2,r:"Medio",min:"$50"},
-{m:"Skrill",c:3.5,t:2,r:"Alto",min:"$50"},
-{m:"Volet",c:2,t:1,r:"Medio",min:"$50"},
-{m:"Zelle",c:0,t:0,r:"Bajo",min:"$50"},
-{m:"Zinli",c:2,t:1,r:"Medio",min:"$50"},
-{m:"Transferencia en Bolivares",c:1.5,t:1,r:"Alto",min:"$50"},
-{m:"Pago Movil interbancario",c:0.5,t:0,r:"Bajo",min:"$20"}
-];
-
-/* RENDER */
-const tabla = document.getElementById("tabla");
-
-function render(datos){
-  tabla.innerHTML="";
-  datos.forEach(d=>{
-    tabla.innerHTML += `
-    <tr>
-      <td>${d.m}</td>
-      <td>${d.c}%</td>
-      <td>${d.t} días</td>
-      <td><span class="badge ${d.r.toLowerCase()}">${d.r}</span></td>
-      <td>${d.min}</td>
-    </tr>`;
-  });
-}
-
-/* KPIs */
-function calcularKPIs(){
-  let barato = data.reduce((a,b)=> a.c<b.c?a:b);
-  let rapido = data.reduce((a,b)=> a.t<b.t?a:b);
-  let seguro = data.find(d=>d.r==="Bajo");
-  let promedio = data.reduce((sum,d)=>sum+d.c,0)/data.length;
-
-  document.getElementById("barato").innerText = barato.m;
-  document.getElementById("rapido").innerText = rapido.m;
-  document.getElementById("seguro").innerText = seguro.m;
-  document.getElementById("promedio").innerText = promedio.toFixed(2)+"%";
-}
-
-/* BUSCADOR */
-document.getElementById("search").addEventListener("keyup", e=>{
-  const texto = e.target.value.toLowerCase();
-  render(data.filter(d=>d.m.toLowerCase().includes(texto)));
-});
-
-/* INIT */
-render(data);
-calcularKPIs();
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
